@@ -1,9 +1,12 @@
 
 use std::{
   cmp::Ordering,
+  ops::{Add, AddAssign, Sub, SubAssign},
+  sync::mpsc::{self, Sender},
+  thread::{self, Builder, JoinHandle},
   time::{Duration, SystemTime, UNIX_EPOCH}
 };
-use time::Timespec;
+use time::{Duration as TimeDuration, Timespec};
 
 use self::inner::monotonic_coarse_now;
 pub use self::inner::monotonic_now;
@@ -13,6 +16,7 @@ const NANOSECONDS_PER_SECOND: u64 = 1_000_000_000;
 const MILLISECOND_PER_SECOND: i64 = 1_000;
 const NANOSECONDS_PER_MILLISECOND: i64 = 1_000_000;
 const DEFAULT_SLOW_SECS: u64 = 1;
+const DEFAULT_WAIT_MS: u64 = 100;
 
 #[inline]
 pub fn duration_to_ms(d: Duration) -> u64 {
@@ -71,22 +75,57 @@ impl UnixSecs {
 
 pub struct SlowTimer {
     slow_time: Duration,
-    //t: Instant
+    t: Instant
 }
 
 impl SlowTimer {
-  pub fn new() {}
+  pub fn new() -> Self { SlowTimer::default() }
 
   pub fn from(slow_time: Duration) -> Self {
-    SlowTimer { slow_time: slow_time  }
+    SlowTimer { slow_time: slow_time, t: Instant::now_coarse()  }
+  }
+
+  pub fn from_secs(secs: u64) -> Self {
+    SlowTimer::from(Duration::from_secs(secs))
+  }
+
+  pub fn from_millis(millis: u64) -> Self {
+    SlowTimer::from(Duration::from_millis(millis))
+  }
+
+  pub fn saturating_elapsed(&self) -> Duration {
+    self.t.saturating_elapsed()
+  }
+
+  pub fn is_slow(&self) -> bool {
+    self.saturating_elapsed() >= self.slow_time
   }
 }
 
-//impl Default for SlowTimer {
-  //fn default() -> Self {
-    
-  //}
-//}
+impl Default for SlowTimer {
+  fn default() -> Self {
+    SlowTimer::from_secs(DEFAULT_SLOW_SECS)
+  }
+}
+
+/*
+pub struct Monitor {
+  tx: Sender<bool>,
+  handle: Option<JoinHandle<()>>
+}
+
+impl Monitor {
+  pub fn new<D, N>(on_jumped: D, now: N) -> Self
+    where
+      D: Fn() + Send + 'static,
+      N: Fn() -> SystemTime + Send + 'static
+  {
+    let props = crate::thread_group::current_properties();
+    let (tx, rx) = mpsc::channel();
+    //let h = Builder::new().name(thd_name!("time-monitor")).s
+  }
+}
+*/
 
 #[cfg(not(target_os = "linux"))]
 mod inner {
@@ -231,5 +270,41 @@ impl PartialOrd for Instant {
       }
       _ => None   
     }
+  }
+}
+
+impl Add<Duration> for Instant {
+  type Output = Instant;
+  fn add(self, other: Duration) -> Instant {
+    match self {
+      Instant::Monotonic(t) =>
+        Instant::Monotonic(t + TimeDuration::from_std(other).unwrap()),
+      Instant::MonotonicCoarse(t) =>
+        Instant::MonotonicCoarse(t + TimeDuration::from_std(other).unwrap())
+    }
+  }
+}
+
+impl AddAssign<Duration> for Instant {
+  fn add_assign(&mut self, rhs: Duration) {
+    *self = self.add(rhs)
+  }
+}
+
+impl Sub<Duration> for Instant {
+  type Output = Instant;
+  fn sub(self, other: Duration) -> Instant {
+    match self {
+      Instant::Monotonic(t) =>
+        Instant::Monotonic(t - TimeDuration::from_std(other).unwrap()),
+      Instant::MonotonicCoarse(t) =>
+        Instant::MonotonicCoarse(t - TimeDuration::from_std(other).unwrap())
+    }
+  }
+}
+
+impl SubAssign<Duration> for Instant {
+  fn sub_assign(&mut self, rhs: Duration) {
+    *self = self.sub(rhs)
   }
 }

@@ -6,9 +6,21 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+collections = { workspace = true }
+tikv_util = { workspace = true }
 
 [workspace]
 members = [
+  "components/collections",
   "components/file_system",
+  "components/tikv_alloc",
   "components/tikv_util",
 ]
+
+[workspace.dependencies]
+collections = { path = "components/collections" }
+tikv_alloc = { path = "components/tikv_alloc" }
+tikv_util = { path = "components/tikv_util" }
+# External libs
+slog = { version = "2.3", features = ["max_level_trace", "release_max_level_debug"] }
+slog-global = { version = "0.1", git = "https://github.com/breeswish/slog-global.git", rev = "d592f88e4dbba5eb439998463054f1a44fbf17b9" }

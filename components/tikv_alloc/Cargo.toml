@@ -1,0 +1,25 @@
+[package]
+name = "tikv_alloc"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+snmalloc = ["snmalloc-rs"]
+
+[dependencies]
+fxhash = "0.2.1"
+
+[dependencies.mimalloc]
+version = "0.1.25"
+optional = true
+
+[dependencies.snmalloc-rs]
+version = "0.2"
+optional = true
+
+[dependencies.tcmalloc]
+version = "0.3.0"
+optional = true
+features = ["bundled"]
