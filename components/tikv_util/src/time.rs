@@ -2,8 +2,8 @@
 use std::{
   cmp::Ordering,
   ops::{Add, AddAssign, Sub, SubAssign},
-  sync::mpsc::{self, Sender},
-  thread::{self, Builder, JoinHandle},
+  //sync::mpsc::{self, Sender},
+  //thread::{self, Builder, JoinHandle},
   time::{Duration, SystemTime, UNIX_EPOCH}
 };
 use time::{Duration as TimeDuration, Timespec};
@@ -16,7 +16,7 @@ const NANOSECONDS_PER_SECOND: u64 = 1_000_000_000;
 const MILLISECOND_PER_SECOND: i64 = 1_000;
 const NANOSECONDS_PER_MILLISECOND: i64 = 1_000_000;
 const DEFAULT_SLOW_SECS: u64 = 1;
-const DEFAULT_WAIT_MS: u64 = 100;
+//const DEFAULT_WAIT_MS: u64 = 100;
 
 #[inline]
 pub fn duration_to_ms(d: Duration) -> u64 {

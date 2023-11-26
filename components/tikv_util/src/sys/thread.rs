@@ -24,20 +24,22 @@ fn cpu_total(sys_time: i64, user_time: i64) -> f64 {
 #[cfg(target_os = "macos")]
 #[allow(bad_style)]
 mod imp {
-  use std::{io, iter::FromIterator, mem::size_of, ptr::null_mut, slice};
+  use std::{io, /*iter::FromIterator, mem::size_of, ptr::null_mut, slice*/};
   use libc::*;
 
   pub type Pid = mach_port_t;
-  type task_inspect_t = mach_port_t;
-  type thread_act_t = mach_port_t;
-  type thread_act_array_t = *mut thread_act_t;
+  //type task_inspect_t = mach_port_t;
+  //type thread_act_t = mach_port_t;
+  //type thread_act_array_t = *mut thread_act_t;
 
   extern "C" {
+    /*
     fn task_threads(
       target_task: task_inspect_t,
       act_list: *mut thread_act_array_t,
       act_listCnt: *mut mach_msg_type_number_t
     ) -> kern_return_t;
+    */
   }
 
   const MICRO_SEC_PER_SEC: i64 = 1_000_000;
@@ -63,7 +65,7 @@ mod imp {
   pub fn thread_id() -> Pid {
     unsafe { mach_thread_self() }
   }
-
+/*
   pub fn thread_ids<C: FromIterator<Pid>>(pid: Pid) -> io::Result<C> {
     unsafe {
       let mut act_list: thread_act_array_t = null_mut();
@@ -87,7 +89,7 @@ mod imp {
       Ok(pids)
     }
   }
-
+*/
   pub fn full_thread_stat(_pid: Pid, tid: Pid) -> io::Result<FullStat> {
     unsafe {
       let flavor = THREAD_BASIC_INFO;
@@ -112,13 +114,13 @@ mod imp {
     }
   }
 
-  pub fn set_priority(_: i32) -> io::Result<()> {
-    Ok(())
-  }
+  //pub fn set_priority(_: i32) -> io::Result<()> {
+    //Ok(())
+  //}
 
-  pub fn get_priority() -> io::Result<i32> {
-    Ok(0)
-  }
+  //pub fn get_priority() -> io::Result<i32> {
+    //Ok(0)
+  //}
 }
 
 pub fn thread_stat(pid: Pid, tid: Pid) -> io::Result<ThreadStat> {
@@ -151,7 +153,7 @@ lazy_static::lazy_static! {
 pub fn hook_thread_start(f: Box<dyn Fn() + Sync + Send>) {
   THREAD_START_HOOKS.lock().unwrap().push(f);
 }
-
+/*
 pub(crate) fn call_thread_start_hooks() {
   for f in THREAD_START_HOOKS.lock().unwrap().iter() {
     f();
@@ -173,3 +175,4 @@ pub(crate) fn remove_thread_name_from_map() {
   let tid = thread_id();
   THREAD_NAME_HASHMAP.lock().unwrap().remove(&tid);
 }
+*/

@@ -2,17 +2,18 @@
 use std::{
   fs,
   io::{self, Seek},
-  path::Path,
-  sync::Arc,
+  //path::Path,
+  //sync::Arc,
 };
 
-use fs2::FileExt;
+//use fs2::FileExt;
 
 pub struct File {
   inner: fs::File,
 }
 
 impl File {
+  /*
   pub fn open<P: AsRef<Path>>(path: P) -> io::Result<File> {
     let inner = fs::File::open(path)?;
     Ok(File {
@@ -47,6 +48,7 @@ impl File {
   pub fn unlock(&self) -> io::Result<()> {
     self.inner.unlock()
   }
+  */
 }
 
 impl Seek for File {

@@ -1,6 +1,6 @@
 use std::thread;
 
-
+pub mod callback;
 #[macro_use]
 pub mod log;
 #[macro_use]
