@@ -3,16 +3,23 @@ name = "tikv_study"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+failpoints = ["fail/failpoints"]
 
 [dependencies]
+byteorder = "1.2"
 collections = { workspace = true }
+error_code = { workspace = true }
+fail = "0.5"
 #grpcio = { workspace = true }
 #grpcio-health = { workspace = true }
 #kvproto = { workspace = true }
+lazy_static = "1.3"
+libc = "0.2"
 #protobuf = { version = "2.8", features = ["bytes"] }
 slog = { workspace = true }
 slog-global = { workspace = true }
+tikv_alloc = { workspace = true }
 tikv_util = { workspace = true }
 
 [patch.crates-io]
@@ -24,6 +31,7 @@ tikv_util = { workspace = true }
 [workspace]
 members = [
   "components/collections",
+  "components/error_code",
   "components/file_system",
   "components/tikv_alloc",
   "components/tikv_util",
@@ -31,6 +39,7 @@ members = [
 
 [workspace.dependencies]
 collections = { path = "components/collections" }
+error_code = { path = "components/error_code" }
 tikv_alloc = { path = "components/tikv_alloc" }
 tikv_util = { path = "components/tikv_util" }
 # External libs

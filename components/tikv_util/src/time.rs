@@ -1,10 +1,10 @@
-
+pub use std::time::Duration;
 use std::{
   cmp::Ordering,
   ops::{Add, AddAssign, Sub, SubAssign},
   //sync::mpsc::{self, Sender},
   //thread::{self, Builder, JoinHandle},
-  time::{Duration, SystemTime, UNIX_EPOCH}
+  time::{SystemTime, UNIX_EPOCH}
 };
 use time::{Duration as TimeDuration, Timespec};
 

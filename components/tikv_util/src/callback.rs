@@ -65,4 +65,11 @@ mod tests {
     cb(2);
     assert_eq!(v.load(SeqCst), 2);
   }
+
+  #[test]
+  fn test_not_called() {
+    let (cb, v) = create_plus_int_cb();
+    drop(cb);
+    assert_eq!(v.load(SeqCst), 1);
+  }
 }
